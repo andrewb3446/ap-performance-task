@@ -1,9 +1,15 @@
-function gravityof () {
-    PixelIstoMeters = 30
-    gravity = 9.8 * PixelIstoMeters
-}
-let gravity = 0
-let PixelIstoMeters = 0
+scene.onHitWall(SpriteKind.Player, function (sprite, location) {
+    speed = speed / 1.1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (playerr.vy == 0) {
+        playerr.vy = -150
+    }
+})
+let acceleration = 0
+let direction = 0
+let speed = 0
+let playerr: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -127,7 +133,7 @@ scene.setBackgroundImage(img`
     8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
     `)
 tiles.setCurrentTilemap(tilemap`level1`)
-let playerr = sprites.create(img`
+playerr = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
     . . . f f f 2 2 2 2 f f f . . . 
@@ -145,8 +151,27 @@ let playerr = sprites.create(img`
     . . . . . f f f f f f . . . . . 
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
-controller.moveSprite(playerr, 200, 0)
+controller.moveSprite(playerr, 100, 0)
 scene.cameraFollowSprite(playerr)
 tiles.placeOnTile(playerr, tiles.getTileLocation(5, 11))
-playerr.ax += 50
-gravityof()
+let turn_speed = 0.1
+let max_speed = 150
+playerr.ay = 320
+game.onUpdate(function () {
+    if (controller.right.isPressed()) {
+        direction += turn_speed * (1 - speed / (1.5 * max_speed))
+    }
+    if (controller.left.isPressed()) {
+        direction += 0 - turn_speed * (1 - speed / (1.5 * max_speed))
+    }
+    if (controller.A.isPressed()) {
+        acceleration = 1.5
+    } else if (controller.down.isPressed()) {
+        acceleration = -2
+    } else {
+        acceleration = 0.25
+    }
+    speed = Math.constrain(speed + acceleration, 0, max_speed)
+    playerr.vx = Math.cos(direction) * speed
+    playerr.vy = Math.sin(direction) * speed
+})
