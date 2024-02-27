@@ -1,14 +1,38 @@
-scene.onHitWall(SpriteKind.Player, function (sprite, location) {
-    speed = speed / 1.1
-})
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (playerr.vy == 0) {
-        playerr.vy = -150
+function spawn_enemies () {
+    let list: number[] = []
+    for (let value of list) {
+    	
     }
+}
+function gravity () {
+    PixelIstoMeters += 30
+    gravityy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump()
 })
-let acceleration = 0
-let direction = 0
-let speed = 0
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite, location) {
+    info.setScore(3)
+    tiles.placeOnTile(playerr, spawn)
+})
+function jump () {
+    if (playerr.isHittingTile(CollisionDirection.Bottom)) {
+        playerr.vy = -8 * PixelIstoMeters
+    }
+}
+function setmap (level: number) {
+    if (current_level == 0) {
+        tiles.setCurrentTilemap(tilemap`level1`)
+    } else if (current_level == 1) {
+    	
+    } else {
+    	
+    }
+}
+let gravityy = 0
+let PixelIstoMeters = 0
+let spawn: tiles.Location = null
+let current_level = 0
 let playerr: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -132,7 +156,6 @@ scene.setBackgroundImage(img`
     8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
     8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
     `)
-tiles.setCurrentTilemap(tilemap`level1`)
 playerr = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -151,27 +174,14 @@ playerr = sprites.create(img`
     . . . . . f f f f f f . . . . . 
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
-controller.moveSprite(playerr, 100, 0)
+controller.moveSprite(playerr, 200, 0)
 scene.cameraFollowSprite(playerr)
-tiles.placeOnTile(playerr, tiles.getTileLocation(5, 11))
-let turn_speed = 0.1
-let max_speed = 150
-playerr.ay = 320
-game.onUpdate(function () {
-    if (controller.right.isPressed()) {
-        direction += turn_speed * (1 - speed / (1.5 * max_speed))
-    }
-    if (controller.left.isPressed()) {
-        direction += 0 - turn_speed * (1 - speed / (1.5 * max_speed))
-    }
-    if (controller.A.isPressed()) {
-        acceleration = 1.5
-    } else if (controller.down.isPressed()) {
-        acceleration = -2
-    } else {
-        acceleration = 0.25
-    }
-    speed = Math.constrain(speed + acceleration, 0, max_speed)
-    playerr.vx = Math.cos(direction) * speed
-    playerr.vy = Math.sin(direction) * speed
-})
+playerr.ay = 450
+scroller.scrollBackgroundWithCamera(scroller.CameraScrollMode.OnlyHorizontal)
+gravity()
+let levelcount = 5
+current_level = 0
+setmap(1)
+spawn = tiles.getTileLocation(5, 11)
+tiles.placeOnTile(playerr, spawn)
+info.setScore(0)
