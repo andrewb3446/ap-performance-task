@@ -1,7 +1,58 @@
-function spawn_enemies () {
-    let list: number[] = []
-    for (let value of list) {
-    	
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump()
+})
+function spawn_enemies (EnemiesList: Image[]) {
+    for (let value of tiles.getTilesByType(assets.tile`myTile5`)) {
+        mySprite = sprites.create(EnemiesList._pickRandom(), SpriteKind.Enemy)
+        tiles.placeOnTile(mySprite, value)
+        if (mySprite.image.equals(img`
+            ........................
+            ........................
+            ........................
+            ........................
+            ..........ffff..........
+            ........ff1111ff........
+            .......fb111111bf.......
+            .......f11111111f.......
+            ......fd11111111df......
+            ......fd11111111df......
+            ......fddd1111dddf......
+            ......fbdbfddfbdbf......
+            ......fcdcf11fcdcf......
+            .......fb111111bf.......
+            ......fffcdb1bdffff.....
+            ....fc111cbfbfc111cf....
+            ....f1b1b1ffff1b1b1f....
+            ....fbfbffffffbfbfbf....
+            .........ffffff.........
+            ...........fff..........
+            ........................
+            ........................
+            ........................
+            ........................
+            `)) {
+            mySprite.setVelocity(-50, 0)
+        }
+        if (mySprite.image.equals(img`
+            . . f f f . . . . . . . . f f f 
+            . f f c c . . . . . . f c b b c 
+            f f c c . . . . . . f c b b c . 
+            f c f c . . . . . . f b c c c . 
+            f f f c c . c c . f c b b c c . 
+            f f c 3 c c 3 c c f b c b b c . 
+            f f b 3 b c 3 b c f b c c b c . 
+            . c b b b b b b c b b c c c . . 
+            . c 1 b b b 1 b b c c c c . . . 
+            c b b b b b b b b b c c . . . . 
+            c b c b b b c b b b b f . . . . 
+            f b 1 f f f 1 b b b b f c . . . 
+            f b b b b b b b b b b f c c . . 
+            . f b b b b b b b b c f . . . . 
+            . . f b b b b b b c f . . . . . 
+            . . . f f f f f f f . . . . . . 
+            `)) {
+            mySprite.setVelocity(30, 0)
+        }
     }
 }
 function gravity () {
@@ -10,6 +61,9 @@ function gravity () {
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     jump()
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile7`, function (sprite, location) {
+	
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite, location) {
     info.setScore(3)
@@ -20,17 +74,22 @@ function jump () {
         playerr.vy = -8 * PixelIstoMeters
     }
 }
+function BackgroundMovement () {
+    scroller.scrollBackgroundWithCamera(scroller.CameraScrollMode.OnlyHorizontal)
+    scroller.scrollBackgroundWithSpeed(-50, 0)
+}
 function setmap (level: number) {
     if (current_level == 0) {
         tiles.setCurrentTilemap(tilemap`level1`)
     } else if (current_level == 1) {
-    	
+        tiles.setCurrentTilemap(tilemap`level5`)
     } else {
     	
     }
 }
 let gravityy = 0
 let PixelIstoMeters = 0
+let mySprite: Sprite = null
 let spawn: tiles.Location = null
 let current_level = 0
 let playerr: Sprite = null
@@ -176,12 +235,66 @@ playerr = sprites.create(img`
     `, SpriteKind.Player)
 controller.moveSprite(playerr, 200, 0)
 scene.cameraFollowSprite(playerr)
-playerr.ay = 450
-scroller.scrollBackgroundWithCamera(scroller.CameraScrollMode.OnlyHorizontal)
+playerr.ay = 400
 gravity()
 let levelcount = 5
 current_level = 0
 setmap(1)
-spawn = tiles.getTileLocation(5, 11)
+spawn = tiles.getTileLocation(8, 40)
 tiles.placeOnTile(playerr, spawn)
 info.setScore(0)
+let list = [img`
+    ........................
+    ........................
+    ........................
+    ........................
+    ..........ffff..........
+    ........ff1111ff........
+    .......fb111111bf.......
+    .......f11111111f.......
+    ......fd11111111df......
+    ......fd11111111df......
+    ......fddd1111dddf......
+    ......fbdbfddfbdbf......
+    ......fcdcf11fcdcf......
+    .......fb111111bf.......
+    ......fffcdb1bdffff.....
+    ....fc111cbfbfc111cf....
+    ....f1b1b1ffff1b1b1f....
+    ....fbfbffffffbfbfbf....
+    .........ffffff.........
+    ...........fff..........
+    ........................
+    ........................
+    ........................
+    ........................
+    `, img`
+    . . f f f . . . . . . . . f f f 
+    . f f c c . . . . . . f c b b c 
+    f f c c . . . . . . f c b b c . 
+    f c f c . . . . . . f b c c c . 
+    f f f c c . c c . f c b b c c . 
+    f f c 3 c c 3 c c f b c b b c . 
+    f f b 3 b c 3 b c f b c c b c . 
+    . c b b b b b b c b b c c c . . 
+    . c 1 b b b 1 b b c c c c . . . 
+    c b b b b b b b b b c c . . . . 
+    c b c b b b c b b b b f . . . . 
+    f b 1 f f f 1 b b b b f c . . . 
+    f b b b b b b b b b b f c c . . 
+    . f b b b b b b b b c f . . . . 
+    . . f b b b b b b c f . . . . . 
+    . . . f f f f f f f . . . . . . 
+    `]
+spawn_enemies(list)
+BackgroundMovement()
+game.onUpdate(function () {
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (value.vx < 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Left))) {
+            value.vx = value.vx * -1
+        }
+        if (value.vx > 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Right))) {
+            value.vx = value.vx * -1
+        }
+    }
+})
