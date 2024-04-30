@@ -1,8 +1,25 @@
+namespace SpriteKind {
+    export const spring = SpriteKind.create()
+    export const ring = SpriteKind.create()
+}
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     jump()
 })
+function gravity () {
+    PixelIstoMeters += 30
+    gravityy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump()
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite, location) {
+    scene.cameraShake(4, 500)
+    info.setScore(0)
+    tiles.placeOnTile(playerr, spawn)
+    setrings()
+})
 function spawn_enemies (EnemiesList: Image[]) {
-    for (let value of tiles.getTilesByType(assets.tile`myTile5`)) {
+    for (let value of tiles.getTilesByType(img`myTile5`)) {
         mySprite = sprites.create(EnemiesList._pickRandom(), SpriteKind.Enemy)
         tiles.placeOnTile(mySprite, value)
         if (mySprite.image.equals(img`
@@ -55,19 +72,45 @@ function spawn_enemies (EnemiesList: Image[]) {
         }
     }
 }
-function gravity () {
-    PixelIstoMeters += 30
-    gravityy = 0
+function hasnextlevel () {
+    return current_level != levelcount
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    jump()
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile7`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.Player, img`myTile12`, function (sprite, location) {
 	
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite, location) {
-    info.setScore(3)
-    tiles.placeOnTile(playerr, spawn)
+function setrings () {
+    for (let value2 of tiles.getTilesByType(img`myTile10`)) {
+        ring2 = sprites.create(img`
+            . . . . f f f f f f f f . . . . 
+            . . f f 5 5 5 5 5 5 5 5 f f . . 
+            . f 4 5 5 f f f f f f 5 5 5 f . 
+            . f 4 f f . . . . . f f f 5 f . 
+            f 4 4 f . . . . . . . . f f 5 f 
+            f 5 f f . . . . . . . . . f 5 f 
+            f 5 f . . . . . . . . . . f 5 f 
+            f 5 f . . . . . . . . . . f 5 f 
+            f 5 f . . . . . . . . . . f 5 f 
+            f 5 f . . . . . . . . . . f 5 f 
+            f 5 f f . . . . . . . . f f 5 f 
+            f 5 5 f . . . . . . . . f 5 5 f 
+            . f 4 f f f . . . . f f f 5 f . 
+            . f 4 4 5 f f f f f f 5 5 5 f . 
+            . . f f 5 5 5 5 5 5 5 5 f f . . 
+            . . . . f f f f f f f f . . . . 
+            `, SpriteKind.ring)
+        tiles.placeOnTile(ring2, value2)
+    }
+}
+scene.onOverlapTile(SpriteKind.Player, img`myTile9`, function (sprite, location) {
+    info.changeScoreBy(20)
+    game.gameOver(true)
+})
+scene.onOverlapTile(SpriteKind.Player, img`myTile7`, function (sprite, location) {
+    sprite.vy = -20 * PixelIstoMeters
+    sprite.y += 10
+})
+info.onLifeZero(function () {
+    game.gameOver(false)
 })
 function jump () {
     if (playerr.isHittingTile(CollisionDirection.Bottom)) {
@@ -78,7 +121,12 @@ function BackgroundMovement () {
     scroller.scrollBackgroundWithCamera(scroller.CameraScrollMode.OnlyHorizontal)
     scroller.scrollBackgroundWithSpeed(-50, 0)
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.ring, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    info.changeScoreBy(2)
+})
 function setmap (level: number) {
+    tiles.setCurrentTilemap(tilemap`level1`)
     if (current_level == 0) {
         tiles.setCurrentTilemap(tilemap`level1`)
     } else if (current_level == 1) {
@@ -87,12 +135,341 @@ function setmap (level: number) {
     	
     }
 }
+scene.onOverlapTile(SpriteKind.Player, img`myTile11`, function (sprite, location) {
+    scene.cameraShake(4, 500)
+    info.setScore(0)
+    tiles.placeOnTile(playerr, spawn)
+})
+function animations () {
+    characterAnimations.runFrames(
+    playerr,
+    [img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d e e e e e f . . . 
+        . . . f e 4 e d d 4 f . . . . . 
+        . . . f 2 2 e d d e f . . . . . 
+        . . f f 5 5 f e e f f f . . . . 
+        . . f f f f f f f f f f . . . . 
+        . . . f f f . . . f f . . . . . 
+        `,img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e d d 4 . . . . 
+        . . . f 2 2 2 2 e d d e . . . . 
+        . . f f 5 5 4 4 f e e f . . . . 
+        . . f f f f f f f f f f . . . . 
+        . . . f f f . . . f f . . . . . 
+        `],
+    100,
+    characterAnimations.rule(Predicate.MovingLeft, Predicate.FacingLeft)
+    )
+    characterAnimations.runFrames(
+    playerr,
+    [img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e e e d d d f . . . 
+        . . . . . f 4 d d e 4 e f . . . 
+        . . . . . f e d d e 2 2 f . . . 
+        . . . . f f f e e f 5 5 f f . . 
+        . . . . f f f f f f f f f f . . 
+        . . . . . f f . . . f f f . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . 4 d d e 4 4 4 e f . . . 
+        . . . . e d d e 2 2 2 2 f . . . 
+        . . . . f e e f 4 4 5 5 f f . . 
+        . . . . f f f f f f f f f f . . 
+        . . . . . f f . . . f f f . . . 
+        `],
+    100,
+    characterAnimations.rule(Predicate.MovingRight, Predicate.FacingRight)
+    )
+    characterAnimations.runFrames(
+    playerr,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . 4 d d e 4 4 4 e f . . . 
+        . . . . e d d e 2 2 2 2 f . . . 
+        . . . . f e e f 4 4 5 5 f f . . 
+        . . . . f f f f f f f f f f . . 
+        . . . . . f f . . . f f f . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e e f . . 
+        . . . . . 4 d d e 2 e d d e . . 
+        . . . . . e d d e 2 e d d e . . 
+        . . . . . f e e f 4 5 e e f . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . f f f . f f . . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f e e . 
+        . . . . f f e e 4 4 4 e f d d e 
+        . . . . . 4 d d e 2 2 2 f d d e 
+        . . . . . e d d e 2 2 2 f 4 e . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . f f f . f f . . . . 
+        `],
+    100,
+    characterAnimations.rule(Predicate.MovingUp, Predicate.FacingRight)
+    )
+    characterAnimations.runFrames(
+    playerr,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e d d 4 . . . . 
+        . . . f 2 2 2 2 e d d e . . . . 
+        . . f f 5 5 4 4 f e e f . . . . 
+        . . f f f f f f f f f f . . . . 
+        . . . f f f . . . f f . . . . . 
+        `,img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `,img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . f e e 4 4 4 e e f f . . . . 
+        . . e d d e 2 e d d 4 . . . . . 
+        . . e d d e 2 e d d e . . . . . 
+        . . f e e 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . f f . f f f . . . . . . 
+        `,img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . e e f d d d d 4 e e e f . . . 
+        e d d f e 4 4 4 e e f f . . . . 
+        e d d f 2 2 2 e d d 4 . . . . . 
+        . e 4 f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . f f . f f f . . . . . . 
+        `],
+    100,
+    characterAnimations.rule(Predicate.MovingUp, Predicate.FacingLeft)
+    )
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    scene.cameraShake(4, 500)
+    info.setScore(0)
+})
+let ring2: Sprite = null
+let mySprite: Sprite = null
 let gravityy = 0
 let PixelIstoMeters = 0
-let mySprite: Sprite = null
 let spawn: tiles.Location = null
 let current_level = 0
+let levelcount = 0
 let playerr: Sprite = null
+let enemyy = null
+game.setDialogFrame(img`
+    . . . f f f f f f f f f . . . 
+    . . f 5 5 5 5 5 5 5 5 5 f . . 
+    . f 5 f f f f f f f f f 5 f . 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    f 5 f 1 1 1 1 1 1 1 1 1 f 5 f 
+    . f 5 f f f f f f f f f 5 f . 
+    . . f 5 5 5 5 5 5 5 5 5 f . . 
+    . . . f f f f f f f f f . . . 
+    `)
+game.showLongText("Collect rings to increase your score!", DialogLayout.Center)
+game.showLongText("Reach the flag in order to move into the next level!", DialogLayout.Bottom)
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -233,15 +610,21 @@ playerr = sprites.create(img`
     . . . . . f f f f f f . . . . . 
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
+info.setScore(0)
 controller.moveSprite(playerr, 200, 0)
 scene.cameraFollowSprite(playerr)
 playerr.ay = 400
 gravity()
-let levelcount = 5
+levelcount = 5
 current_level = 0
+setmap(current_level)
+spawn = tiles.getTileLocation(5, 127)
 setmap(1)
 spawn = tiles.getTileLocation(8, 40)
 tiles.placeOnTile(playerr, spawn)
+BackgroundMovement()
+animations()
+setrings()
 info.setScore(0)
 let list = [img`
     ........................
@@ -289,12 +672,21 @@ let list = [img`
 spawn_enemies(list)
 BackgroundMovement()
 game.onUpdate(function () {
-    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
-        if (value.vx < 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Left))) {
-            value.vx = value.vx * -1
+    for (let value4 of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (value4.vx < 0 && (value4.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value4.isHittingTile(CollisionDirection.Left))) {
+            value4.vx = value4.vx * -1
         }
-        if (value.vx > 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Right))) {
-            value.vx = value.vx * -1
+        if (value4.vx > 0 && (value4.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value4.isHittingTile(CollisionDirection.Right))) {
+            value4.vx = value4.vx * -1
+        }
+    }
+})
+game.onUpdate(function () {
+    for (let value3 of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (value3.vx < 0 && (value3.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value3.isHittingTile(CollisionDirection.Left))) {
+            value3.vx = value3.vx * -1
+        } else if (value3.vx > 0 && (value3.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value3.isHittingTile(CollisionDirection.Right))) {
+            value3.vx = value3.vx * -1
         }
     }
 })
