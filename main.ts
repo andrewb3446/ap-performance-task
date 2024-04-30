@@ -9,7 +9,7 @@ function gravity () {
     PixelIstoMeters += 30
     gravityy = 0
 }
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`spike`, function (sprite, location) {
     scene.cameraShake(4, 500)
     info.setScore(0)
     tiles.placeOnTile(playerr, spawn)
@@ -25,11 +25,6 @@ function spawn_enemies (EnemiesList: Image[]) {
             mySprite.setVelocity(30, 0)
         }
     }
-}
-function hasnextlevel () {
-    let levelcount = 0
-    let current_level = 0
-    return current_level != levelcount
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`flag`, function (sprite, location) {
     info.changeScoreBy(20)
