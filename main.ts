@@ -19,10 +19,10 @@ function spawn_enemies (EnemiesList: Image[]) {
         mySprite = sprites.create(EnemiesList._pickRandom(), SpriteKind.Enemy)
         tiles.placeOnTile(mySprite, value)
         if (mySprite.image.equals(assets.image`enemy11`)) {
-            mySprite.setVelocity(-50, 0)
+            mySprite.setVelocity(-80, 0)
         }
         if (mySprite.image.equals(assets.image`enemy 22`)) {
-            mySprite.setVelocity(30, 0)
+            mySprite.setVelocity(50, 0)
         }
     }
 }
@@ -115,21 +115,11 @@ let list = [assets.image`enemy 1`, assets.image`enemy 2`]
 spawn_enemies(list)
 BackgroundMovement()
 game.onUpdate(function () {
-    for (let value4 of sprites.allOfKind(SpriteKind.Enemy)) {
-        if (value4.vx < 0 && (value4.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value4.isHittingTile(CollisionDirection.Left))) {
-            value4.vx = value4.vx * -1
-        }
-        if (value4.vx > 0 && (value4.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value4.isHittingTile(CollisionDirection.Right))) {
-            value4.vx = value4.vx * -1
-        }
-    }
-})
-game.onUpdate(function () {
-    for (let value3 of sprites.allOfKind(SpriteKind.Enemy)) {
-        if (value3.vx < 0 && (value3.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value3.isHittingTile(CollisionDirection.Left))) {
-            value3.vx = value3.vx * -1
-        } else if (value3.vx > 0 && (value3.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value3.isHittingTile(CollisionDirection.Right))) {
-            value3.vx = value3.vx * -1
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (value.vx < 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Left))) {
+            value.vx = value.vx * -1
+        } else if (value.vx > 0 && (value.tileKindAt(TileDirection.Bottom, assets.tile`transparency16`) || value.isHittingTile(CollisionDirection.Right))) {
+            value.vx = value.vx * -1
         }
     }
 })
