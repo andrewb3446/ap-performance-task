@@ -14,6 +14,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`spike`, function (sprite, loc
     info.setScore(0)
     tiles.placeOnTile(playerr, spawn)
 })
+// places random enemies at locations with set velocities
 function spawn_enemies (EnemiesList: Image[]) {
     for (let value of tiles.getTilesByType(assets.tile`mi`)) {
         mySprite = sprites.create(EnemiesList._pickRandom(), SpriteKind.Enemy)
@@ -48,6 +49,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.ring, function (sprite, otherSpr
     sprites.destroy(otherSprite)
     info.changeScoreBy(2)
 })
+// causes player to bounce off spring
 scene.onOverlapTile(SpriteKind.Player, assets.tile`spring`, function (sprite, location) {
     sprite.vy = -20 * PixelIstoMeters
     sprite.y += 10
