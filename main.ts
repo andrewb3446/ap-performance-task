@@ -27,7 +27,6 @@ function spawn_enemies (EnemiesList: Image[]) {
     }
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`flag`, function (sprite, location) {
-    info.changeScoreBy(20)
     game.gameOver(true)
 })
 function setrings () {
@@ -98,7 +97,7 @@ let playerr: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
 game.setDialogFrame(assets.image`ring frame`)
 game.showLongText("Collect rings to increase your score!", DialogLayout.Center)
-game.showLongText("Reach the flag in order to move into the next level!", DialogLayout.Bottom)
+game.showLongText("Reach the flag to win!", DialogLayout.Bottom)
 scene.setBackgroundImage(assets.image`background`)
 playerr = sprites.create(assets.image`player`, SpriteKind.Player)
 info.setScore(0)
